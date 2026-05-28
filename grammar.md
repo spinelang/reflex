@@ -1,4 +1,3 @@
-<program> ::= <sexp>*
 <sexp>    ::= <atom> | <list>
 <list>    ::= "(" <expr>* ")"
 <atom>    ::= <number> | <symbol>
