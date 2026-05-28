@@ -5,10 +5,10 @@ namespace lexer {
 std::ostream &operator<<(std::ostream &os, const Token &t) {
   switch (t.type_) {
   case TokenType::LParen:
-    os << " LP ";
+    os << "LP";
     break;
   case TokenType::RParen:
-    os << " RP ";
+    os << "RP";
     break;
   case TokenType::Number:
     os << "NUM(" << std::get<int>(t.value_) << ")";
