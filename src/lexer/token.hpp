@@ -18,7 +18,7 @@ class Token {
   // int column_;
 
 public:
-  Token(TokenType type, value_type value) : value(value), type(type) {}
+  Token(TokenType type, value_type value) : type(type), value(value) {}
 
   TokenType type;
   value_type value;
