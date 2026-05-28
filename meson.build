@@ -14,6 +14,9 @@ interpreter_src = [
   'src/main.cpp',
   'src/lexer/token.cpp',
   'src/lexer/lexer.cpp',
+  'src/parser/ast.cpp',
+  'src/parser/list.cpp',
+  'src/parser/parser.cpp'
 ]
 
 executable('reader', interpreter_src)
