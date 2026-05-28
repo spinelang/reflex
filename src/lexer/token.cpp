@@ -11,10 +11,10 @@ std::ostream &operator<<(std::ostream &os, const Token &t) {
     os << "RP";
     break;
   case TokenType::Number:
-    os << "NUM(" << std::get<int>(t.value_) << ")";
+    os << "NUM(" << std::get<int>(t.value) << ")";
     break;
   case TokenType::Symbol:
-    os << "SYM(" << std::get<std::string>(t.value_) << ")";
+    os << "SYM(" << std::get<std::string>(t.value) << ")";
     break;
   case TokenType::Eof:
     os << "Eof";
