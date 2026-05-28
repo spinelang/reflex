@@ -5,7 +5,7 @@
 #include <iostream>
 
 int main() {
-  auto program = "(+ 12 (* 1 2) (+ 7 (* 12 11)))";
+  auto program = "(* -1 (+ 12 (* 1 2) (+ 7 (* 12 11))))";
   lexer::Lexer lex(program);
   parser::Parser parser(lex);
   auto parsed = parser.parse();

@@ -21,6 +21,8 @@ std::optional<char> Lexer::eat() {
   return source_.at(offset_++);
 }
 
+bool is_delimeter(char c) { return std::isspace(c) || c == ')' || c == '('; }
+
 void Lexer::skip_whitespace() {
   while (peek().has_value() && std::isspace(peek().value())) {
     eat();
@@ -29,7 +31,7 @@ void Lexer::skip_whitespace() {
 
 std::string_view Lexer::read_sym() {
   auto start = offset_;
-  while (peek().has_value() && !std::isspace(peek().value())) {
+  while (peek().has_value() && !is_delimeter(peek().value())) {
     eat();
   }
 
@@ -38,6 +40,8 @@ std::string_view Lexer::read_sym() {
 
 int Lexer::read_num() {
   auto start = offset_;
+  if (peek() == '-')
+    eat();
   while (peek().has_value() && std::isdigit(peek().value())) {
     eat();
   }
