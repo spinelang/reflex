@@ -8,7 +8,6 @@ namespace lexer {
 enum class TokenType { LParen, RParen, Number, Symbol, Eof };
 
 class Token {
-  TokenType type_;
   using value_type = std::variant<int,           // Number
                                   std::string,   // Symbol
                                   std::monostate // all others
@@ -20,8 +19,9 @@ class Token {
   // int column_;
 
 public:
-  Token(TokenType type, value_type value) : type_(type), value_(value) {}
+  Token(TokenType type, value_type value) : value_(value), type(type) {}
 
+  TokenType type;
   friend std::ostream &operator<<(std::ostream &os, const Token &t);
   bool is_eof() const;
 };
