@@ -31,10 +31,14 @@ void Parser::error(std::string msg) {
 
 Sexp Parser::parse_sexp() {
   if (cur_.type == lexer::TokenType::Number) {
-    return Sexp(Atom(std::get<int>(cur_.value)));
+    auto val = std::get<int>(cur_.value);
+    eat(lexer::TokenType::Number);
+    return Sexp(Atom(val));
   }
   if (cur_.type == lexer::TokenType::Symbol) {
-    return Sexp(Atom(std::get<std::string>(cur_.value)));
+    auto val = std::get<std::string>(cur_.value);
+    eat(lexer::TokenType::Symbol);
+    return Sexp(Atom(val));
   }
 
   return Sexp(parse_list());
@@ -49,10 +53,9 @@ List Parser::parse_list() {
       break;
     }
     l.push_back(parse_sexp());
-
-    advance();
   }
 
+  eat(lexer::TokenType::RParen);
   return List(l);
 }
 
