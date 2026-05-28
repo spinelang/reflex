@@ -25,4 +25,7 @@ public:
   friend std::ostream &operator<<(std::ostream &os, const Token &t);
   bool is_eof() const;
 };
+
+std::ostream &operator<<(std::ostream &os, const TokenType t);
+
 } // namespace lexer
