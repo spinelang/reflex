@@ -38,10 +38,36 @@ int Eval::eval_list(parser::List l) {
   auto op =
       std::get<parser::Symbol>(std::get<parser::Atom>(l.list[0].value).value)
           .name;
+  auto uargs = l.list | std::views::drop(1);
+
+  if (op == "if") {
+    if (uargs.size() != 3) {
+      throw std::runtime_error("not accepts only a single argument");
+    }
+    if (eval_ast(uargs[0])) {
+      return eval_ast(uargs[1]);
+    } else {
+      return eval_ast(uargs[2]);
+    }
+  }
 
   std::vector<int> args;
-  for (auto arg : l.list | std::views::drop(1)) {
+  for (auto arg : uargs) {
     args.push_back(eval_ast(arg));
+  }
+
+  if (op == "not") {
+    if (args.size() != 1) {
+      throw std::runtime_error("not accepts only a single argument");
+    }
+    return !args[0];
+  }
+
+  if (op == "<=") {
+    if (args.size() != 2) {
+      throw std::runtime_error("<= accepts only two arguments");
+    }
+    return args[0] <= args[1];
   }
 
   if (op == "+") {

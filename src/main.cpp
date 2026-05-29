@@ -4,8 +4,7 @@
 #include "src/parser/parser.hpp"
 #include <iostream>
 
-int main() {
-  auto program = "(* -1 (+ 12 (* 1 2) (+ 7 (* 12 11))))";
+void run(const char *program, int expected) {
   lexer::Lexer lex(program);
   parser::Parser parser(lex);
   auto parsed = parser.parse();
@@ -27,6 +26,14 @@ int main() {
   std::cout << parsed << std::endl;
   std::cout << "evaluating:" << std::endl;
   std::cout << eval.eval() << std::endl;
+
+  std::cout << "expected: " << expected << std::endl;
+}
+
+int main() {
+  run("(* -1 (+ 12 (* 1 2) (+ 7 (* 12 11))))", -153);
+
+  run("(if (not (<= 1 (* 2 12))) (+ 0 0 0 1) (* 1 1 2))", 2);
 
   return 0;
 }
