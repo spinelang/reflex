@@ -8,7 +8,6 @@ project(
 )
 
 gtest_dep = dependency('gtest_main')
-bench_dep = dependency('benchmark_main')
 
 interpreter_src = [
   'src/main.cpp',
