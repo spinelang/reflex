@@ -3,18 +3,16 @@
 #include "src/lexer/token.hpp"
 #include "src/parser/parser.hpp"
 #include <iostream>
+#include <string>
 
-void run(const char *program, int expected) {
-  lexer::Lexer lex(program);
-  parser::Parser parser(lex);
-  auto parsed = parser.parse();
-  Eval eval(parsed);
+void run(const std::string &program) {
+  lexer::Lexer prelex(program);
 
   std::cout << "program:\n" << program << "\n";
 
   std::cout << "lexing:\n";
   while (1) {
-    auto t = lex.scan_token();
+    auto t = prelex.scan_token();
     if (t.is_eof()) {
       break;
     }
@@ -23,11 +21,24 @@ void run(const char *program, int expected) {
   std::cout << std::endl;
 
   std::cout << "parsing:" << std::endl;
+  parser::Parser parser(lexer::Lexer{program});
+
+  auto parsed = parser.parse();
   std::cout << parsed << std::endl;
   std::cout << "evaluating:" << std::endl;
+  Eval eval(parsed);
   std::cout << eval.eval() << std::endl;
-
-  std::cout << "expected: " << expected << std::endl;
 }
 
-int main() { return 0; }
+int main() {
+  std::string input;
+  std::cout << "print q to quit" << std::endl;
+  while (1) {
+    std::getline(std::cin, input);
+    if (input == "q") {
+      break;
+    }
+    run(input);
+  }
+  return 0;
+}
