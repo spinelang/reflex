@@ -30,10 +30,4 @@ void run(const char *program, int expected) {
   std::cout << "expected: " << expected << std::endl;
 }
 
-int main() {
-  run("(* -1 (+ 12 (* 1 2) (+ 7 (* 12 11))))", -153);
-
-  run("(if (not (<= 1 (* 2 12))) (+ 0 0 0 1) (* 1 1 2))", 2);
-
-  return 0;
-}
+int main() { return 0; }

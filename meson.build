@@ -10,7 +10,6 @@ project(
 gtest_dep = dependency('gtest_main')
 
 interpreter_src = [
-  'src/main.cpp',
   'src/lexer/token.cpp',
   'src/lexer/lexer.cpp',
   'src/parser/ast.cpp',
@@ -19,4 +18,13 @@ interpreter_src = [
   'src/eval/eval.cpp'
 ]
 
-executable('reader', interpreter_src)
+driver_src = [
+    'src/main.cpp'
+]
+
+test_src = ['src/test/eval_test.cpp']
+
+interp_lib = static_library('interp lib', interpreter_src)
+test('tests', executable('testss', test_src, dependencies: gtest_dep, link_with: interp_lib))
+
+executable('reader', interpreter_src + driver_src)

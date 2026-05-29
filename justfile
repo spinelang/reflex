@@ -7,5 +7,8 @@ setup-release:
 build:
     meson compile -C build
 
+test: build
+    meson test -C build
+
 run: build
     ./build/reader

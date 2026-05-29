@@ -1,0 +1,21 @@
+#include "src/eval/eval.hpp"
+#include "src/lexer/lexer.hpp"
+#include "src/parser/parser.hpp"
+#include <gtest/gtest.h>
+
+void run(const char *program, int expected) {
+  lexer::Lexer lex(program);
+  parser::Parser parser(lex);
+  auto parsed = parser.parse();
+  Eval eval(parsed);
+
+  ASSERT_EQ(eval.eval(), expected);
+}
+
+TEST(EvalSuite, Arithmetics) {
+  run("(* -1 (+ 12 (* 1 2) (+ 7 (* 12 11))))", -153);
+}
+
+TEST(EvalSuite, SimpleIfNotLeq) {
+  run("(if (not (<= 1 (* 2 12))) (+ 0 0 0 1) (* 1 1 2))", 2);
+}
