@@ -21,31 +21,6 @@ int Eval::eval_ast(const parser::Sexp &s) {
   }
 
   return eval_list(std::get<parser::List>(s.value));
-
-  auto op =
-      std::get<parser::Symbol>(std::get<parser::Atom>(list[0].value).value)
-          .name;
-
-  std::vector<int> args;
-  for (size_t i = 1; i < list.size(); ++i) {
-    args.push_back(eval_ast(list[i]));
-  }
-
-  if (op == "+") {
-    int sum = 0;
-    for (int arg : args)
-      sum += arg;
-    return sum;
-  }
-
-  if (op == "+") {
-    int sum = 0;
-    for (int arg : args)
-      sum += arg;
-    return sum;
-  }
-
-  throw std::runtime_error("unsupported oprator");
 }
 
 int Eval::eval_list(parser::List l) {
