@@ -22,3 +22,7 @@ TEST(EvalSuite, LongArithmetics) {
 TEST(EvalSuite, SimpleIfNotLeq) {
   run("(if (not (<= 1 (* 2 12))) (+ 0 0 0 1) (* 1 1 2))", 2);
 }
+
+TEST(EvalSuite, SimpleAndOrA) { run("(and (or (and 1 0 1) (and  1 1)) 1)", 1); }
+
+TEST(EvalSuite, SimpleAndOrB) { run("(or (and (or 0 0 0) 0) 0)", 0); }
