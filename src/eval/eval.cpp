@@ -3,19 +3,54 @@
 #include <exception>
 #include <iostream>
 #include <ranges>
+#include <stdexcept>
+#include <vector>
 
-std::variant<parser::Number, parser::Symbol> Eval::eval_atom(parser::Atom a) {
-  if (a.type == parser::AtomType::Number) {
-    return std::get<parser::Number>(a.value);
-  } else {
-    return std::get<parser::Symbol>(a.value);
+int Eval::eval_ast(const parser::Sexp &s) {
+  if (s.type == parser::SexpType::Atom) {
+    auto &atom = std::get<parser::Atom>(s.value);
+    if (atom.type == parser::AtomType::Number) {
+      return std::get<parser::Number>(atom.value).num;
+    }
+    throw std::runtime_error("variables not yet supported");
   }
+
+  const auto &list = std::get<parser::List>(s.value).list;
+  if (list.empty()) {
+    throw std::runtime_error("empty lists are not yet supported");
+  }
+
+  return eval_list(std::get<parser::List>(s.value));
+
+  auto op =
+      std::get<parser::Symbol>(std::get<parser::Atom>(list[0].value).value)
+          .name;
+
+  std::vector<int> args;
+  for (size_t i = 1; i < list.size(); ++i) {
+    args.push_back(eval_ast(list[i]));
+  }
+
+  if (op == "+") {
+    int sum = 0;
+    for (int arg : args)
+      sum += arg;
+    return sum;
+  }
+
+  if (op == "+") {
+    int sum = 0;
+    for (int arg : args)
+      sum += arg;
+    return sum;
+  }
+
+  throw std::runtime_error("unsupported oprator");
 }
 
 int Eval::eval_list(parser::List l) {
   if (l.list.empty()) {
-    std::cout << "cannot evaluate empty lists" << std::endl;
-    std::terminate();
+    throw std::runtime_error("empty lists not supported");
   }
 
   if (l.list[0].type != parser::SexpType::Atom ||
@@ -28,45 +63,30 @@ int Eval::eval_list(parser::List l) {
   auto op =
       std::get<parser::Symbol>(std::get<parser::Atom>(l.list[0].value).value)
           .name;
-  auto args = l.list | std::views::drop(1);
+
+  std::vector<int> args;
+  for (auto arg : l.list | std::views::drop(1)) {
+    args.push_back(eval_ast(arg));
+  }
 
   if (op == "+") {
     auto sum = 0;
     for (auto elem : args) {
-      int t;
-      if (elem.type == parser::SexpType::Atom) {
-        t = std::get<parser::Number>(std::get<parser::Atom>(elem.value).value)
-                .num;
-      } else {
-        t = eval_list(std::get<parser::List>(elem.value));
-      }
-
-      sum += t;
+      sum += elem;
     }
     return sum;
   }
+
   if (op == "*") {
     auto prod = 1;
     for (auto elem : args) {
-      int t;
-      if (elem.type == parser::SexpType::Atom) {
-        t = std::get<parser::Number>(std::get<parser::Atom>(elem.value).value)
-                .num;
-      } else {
-        t = eval_list(std::get<parser::List>(elem.value));
-      }
-
-      prod *= t;
+      prod *= elem;
     }
     return prod;
   }
 
-  std::cout << "Unsupported operator " << op << std::endl;
+  std::cout << "unsupported operator " << op << std::endl;
   std::terminate();
 }
 
-std::variant<parser::Atom, parser::List> Eval::eval_sexp(parser::Sexp s) {
-  return std::get<parser::Atom>(s.value);
-}
-
-int Eval::eval() { return eval_list(std::get<parser::List>(ast_.value)); }
+int Eval::eval() { return eval_ast(ast_); }
