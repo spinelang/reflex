@@ -12,7 +12,11 @@ void run(const char *program, int expected) {
   ASSERT_EQ(eval.eval(), expected);
 }
 
-TEST(EvalSuite, Arithmetics) {
+TEST(EvalSuite, One) { run("1", 1); }
+
+TEST(EvalSuite, SimpleArithmetics) { run("(+ 1 2)", 3); }
+
+TEST(EvalSuite, LongArithmetics) {
   run("(* -1 (+ 12 (* 1 2) (+ 7 (* 12 11))))", -153);
 }
 
