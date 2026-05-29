@@ -51,6 +51,24 @@ int Eval::eval_list(parser::List l) {
     }
   }
 
+  if (op == "or") {
+    for (auto &arg : uargs) {
+      if (eval_ast(arg) != 0) {
+        return 1;
+      }
+    }
+    return 0;
+  }
+
+  if (op == "and") {
+    for (auto &arg : uargs) {
+      if (eval_ast(arg) == 0) {
+        return 0;
+      }
+    }
+    return 1;
+  }
+
   std::vector<int> args;
   for (auto arg : uargs) {
     args.push_back(eval_ast(arg));
