@@ -22,7 +22,7 @@ class Parser {
   Number parse_number();
 
 public:
-  Parser(lexer::Lexer &lexer);
+  Parser(lexer::Lexer &&lexer);
   Sexp parse();
 };
 } // namespace parser

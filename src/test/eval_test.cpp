@@ -4,8 +4,7 @@
 #include <gtest/gtest.h>
 
 void run(const char *program, int expected) {
-  lexer::Lexer lex(program);
-  parser::Parser parser(lex);
+  parser::Parser parser(lexer::Lexer{program});
   auto parsed = parser.parse();
   Eval eval(parsed);
 

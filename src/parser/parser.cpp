@@ -8,7 +8,7 @@
 
 namespace parser {
 
-Parser::Parser(lexer::Lexer &lexer)
+Parser::Parser(lexer::Lexer &&lexer)
     : lexer_(lexer), cur_(lexer_.scan_token()) {}
 void Parser::advance() { cur_ = lexer_.scan_token(); }
 
