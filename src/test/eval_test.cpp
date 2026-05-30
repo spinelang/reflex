@@ -2,13 +2,31 @@
 #include "src/lexer/lexer.hpp"
 #include "src/parser/parser.hpp"
 #include <gtest/gtest.h>
+#include <type_traits>
+#include <utility>
 
-void run(const char *program, int expected) {
+template <typename T> struct is_std_pair : std::false_type {};
+
+template <typename T, typename U>
+struct is_std_pair<std::pair<T, U>> : std::true_type {};
+
+template <typename T>
+concept isPair = is_std_pair<T>::value;
+
+template <isPair... Globals>
+void run(const char *program, int expected, Globals &&...globals) {
   parser::Parser parser(lexer::Lexer{program});
   auto parsed = parser.parse();
-  Eval eval(parsed);
+  Eval evaluator(parsed);
 
-  ASSERT_EQ(eval.eval(), expected);
+  (
+      [&evaluator](auto &&global) {
+        auto &&[name, value] = global;
+        evaluator.add_global(name, value);
+      }(std::forward<Globals>(globals)),
+      ...);
+
+  ASSERT_EQ(evaluator.eval(), expected);
 }
 
 TEST(EvalSuite, One) { run("1", 1); }
@@ -26,3 +44,12 @@ TEST(EvalSuite, SimpleIfNotLeq) {
 TEST(EvalSuite, SimpleAndOrA) { run("(and (or (and 1 0 1) (and  1 1)) 1)", 1); }
 
 TEST(EvalSuite, SimpleAndOrB) { run("(or (and (or 0 0 0) 0) 0)", 0); }
+
+TEST(EvalSuite, DefineSingle) { run("(define x 12)", 12); }
+
+TEST(EvalSuite, GlobalEnvSingle) { run("x", 119, std::make_pair("x", 119)); }
+
+TEST(EvalSuite, GlobalEnvSimple) {
+  run("(* z (+ x y))", 21, std::make_pair("x", 119), std::make_pair("y", -112),
+      std::make_pair("z", 3));
+}

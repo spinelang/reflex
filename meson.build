@@ -15,7 +15,8 @@ interpreter_src = [
   'src/parser/ast.cpp',
   'src/parser/list.cpp',
   'src/parser/parser.cpp',
-  'src/eval/eval.cpp'
+  'src/eval/eval.cpp',
+  'src/eval/env.cpp'
 ]
 
 driver_src = [
