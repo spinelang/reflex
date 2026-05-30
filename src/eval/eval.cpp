@@ -4,12 +4,13 @@
 #include <iostream>
 #include <ranges>
 #include <stdexcept>
+#include <variant>
 #include <vector>
 
 int Eval::eval_ast(const parser::Sexp &s) {
-  if (s.type == parser::SexpType::Atom) {
+  if (std::holds_alternative<parser::Atom>(s.value)) {
     auto &atom = std::get<parser::Atom>(s.value);
-    if (atom.type == parser::AtomType::Number) {
+    if (std::holds_alternative<parser::Number>(atom.value)) {
       return std::get<parser::Number>(atom.value).num;
     }
     throw std::runtime_error("variables not yet supported");
@@ -28,9 +29,9 @@ int Eval::eval_list(parser::List l) {
     throw std::runtime_error("empty lists not supported");
   }
 
-  if (l.list[0].type != parser::SexpType::Atom ||
-      std::get<parser::Atom>(l.list[0].value).type !=
-          parser::AtomType::Symbol) {
+  if (!std::holds_alternative<parser::Atom>(l.list[0].value) ||
+      !std::holds_alternative<parser::Symbol>(
+          std::get<parser::Atom>(l.list[0].value).value)) {
     std::cout << "first entry of a list must be a symbol" << std::endl;
     std::terminate();
   }

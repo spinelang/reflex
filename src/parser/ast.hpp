@@ -37,24 +37,20 @@ struct List {
   friend std::ostream &operator<<(std::ostream &os, const List &l);
 };
 
-enum class AtomType { Number, Symbol };
 struct Atom {
-  AtomType type;
   std::variant<Number, Symbol> value;
 
-  Atom(int n) : type(AtomType::Number), value(n) {}
-  Atom(std::string s) : type(AtomType::Symbol), value(s) {}
+  Atom(int n) : value(n) {}
+  Atom(std::string s) : value(s) {}
 
   friend std::ostream &operator<<(std::ostream &os, const Atom &a);
 };
 
-enum class SexpType { Atom, List };
 struct Sexp {
-  SexpType type;
   std::variant<Atom, List> value;
 
-  Sexp(Atom a) : type(SexpType::Atom), value(a) {}
-  Sexp(List l) : type(SexpType::List), value(l) {}
+  Sexp(Atom a) : value(a) {}
+  Sexp(List l) : value(l) {}
 
   friend std::ostream &operator<<(std::ostream &os, const Sexp &s);
 };

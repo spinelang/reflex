@@ -1,6 +1,7 @@
 #include "src/parser/ast.hpp"
 #include <iostream>
 #include <ostream>
+#include <variant>
 
 namespace parser {
 
@@ -25,28 +26,14 @@ std::ostream &operator<<(std::ostream &os, const List &l) {
 
 std::ostream &operator<<(std::ostream &os, const Atom &a) {
   os << "Atom(";
-  switch (a.type) {
-  case AtomType::Number:
-    os << std::get<Number>(a.value);
-    break;
-  case AtomType::Symbol:
-    os << std::get<Symbol>(a.value);
-    break;
-  }
+  std::visit([&os](const auto &val) { os << val; }, a.value);
   os << ")";
   return os;
 }
 
 std::ostream &operator<<(std::ostream &os, const Sexp &s) {
   os << "Sexp(";
-  switch (s.type) {
-  case SexpType::Atom:
-    os << std::get<Atom>(s.value);
-    break;
-  case SexpType::List:
-    os << std::get<List>(s.value);
-    break;
-  }
+  std::visit([&os](const auto &val) { os << val; }, s.value);
   os << ")";
   return os;
 }
@@ -55,7 +42,7 @@ void dump_ast(const Sexp &ast, int level) {
   for (int i = 0; i < level; ++i) {
     std::cout << "   ";
   }
-  if (ast.type == SexpType::Atom) {
+  if (std::holds_alternative<parser::Atom>(ast.value)) {
     std::cout << std::get<Atom>(ast.value) << std::endl;
   } else {
     std::cout << "List(" << std::endl;
