@@ -58,10 +58,14 @@ void dump_ast(const Sexp &ast, int level) {
   if (ast.type == SexpType::Atom) {
     std::cout << std::get<Atom>(ast.value) << std::endl;
   } else {
-    std::cout << "list" << std::endl;
+    std::cout << "List(" << std::endl;
     for (auto &elem : std::get<List>(ast.value).list) {
       dump_ast(elem, level + 1);
     }
+    for (int i = 0; i < level; ++i) {
+      std::cout << "   ";
+    }
+    std::cout << ")" << std::endl;
   }
 }
 
