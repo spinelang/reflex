@@ -1,5 +1,5 @@
 setup:
-    CXX=clang++ CXX_LD=mold meson setup build
+    CXX=clang++ CXX_LD=mold meson setup build -Dbuildtype=debug -Db_sanitize=address,undefined -Db_lundef=false
 
 setup-release:
     CXX=clang++ CXX_LD=mold meson setup build --buildtype=release
