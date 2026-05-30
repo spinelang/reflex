@@ -5,7 +5,7 @@
 class Eval {
   parser::Sexp ast_;
 
-  int eval_list(parser::List l);
+  int eval_list(const parser::List &l);
   int eval_ast(const parser::Sexp &s);
 
 public:

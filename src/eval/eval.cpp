@@ -24,7 +24,7 @@ int Eval::eval_ast(const parser::Sexp &s) {
   return eval_list(std::get<parser::List>(s.value));
 }
 
-int Eval::eval_list(parser::List l) {
+int Eval::eval_list(const parser::List &l) {
   if (l.list.empty()) {
     throw std::runtime_error("empty lists not supported");
   }
