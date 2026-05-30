@@ -1,6 +1,7 @@
 #include "src/eval/eval.hpp"
 #include "src/lexer/lexer.hpp"
 #include "src/lexer/token.hpp"
+#include "src/parser/ast.hpp"
 #include "src/parser/parser.hpp"
 #include <iostream>
 #include <string>
@@ -24,7 +25,7 @@ void run(const std::string &program) {
   parser::Parser parser(lexer::Lexer{program});
 
   auto parsed = parser.parse();
-  std::cout << parsed << std::endl;
+  parser::dump_ast(parsed);
   std::cout << "evaluating:" << std::endl;
   Eval eval(parsed);
   std::cout << eval.eval() << std::endl;

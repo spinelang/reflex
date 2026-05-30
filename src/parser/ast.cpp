@@ -1,4 +1,5 @@
 #include "src/parser/ast.hpp"
+#include <iostream>
 #include <ostream>
 
 namespace parser {
@@ -49,4 +50,19 @@ std::ostream &operator<<(std::ostream &os, const Sexp &s) {
   os << ")";
   return os;
 }
+
+void dump_ast(const Sexp &ast, int level) {
+  for (int i = 0; i < level; ++i) {
+    std::cout << "   ";
+  }
+  if (ast.type == SexpType::Atom) {
+    std::cout << std::get<Atom>(ast.value) << std::endl;
+  } else {
+    std::cout << "list" << std::endl;
+    for (auto &elem : std::get<List>(ast.value).list) {
+      dump_ast(elem, level + 1);
+    }
+  }
+}
+
 } // namespace parser

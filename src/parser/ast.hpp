@@ -59,4 +59,5 @@ struct Sexp {
   friend std::ostream &operator<<(std::ostream &os, const Sexp &s);
 };
 
+void dump_ast(const Sexp &ast, int level = 0);
 } // namespace parser
