@@ -98,6 +98,38 @@ int Eval::eval_list(const parser::List& l, const Env& env) {
     return res;
   }
 
+  if (op == "let") {
+    if (uargs.size() != 2) {
+      throw std::runtime_error("let accepts only two arguments");
+    }
+    if (!std::holds_alternative<parser::List>(uargs[0].value)) {
+      throw std::runtime_error("let accepts list as first parameter");
+    }
+    auto init_list = std::get<parser::List>(uargs[0].value).list;
+    if (init_list.size() != 2) {
+      throw std::runtime_error(
+          "identifier list of let must have only two entries");
+    }
+    if (!std::holds_alternative<parser::Atom>(init_list[0].value)) {
+      throw std::runtime_error(
+          "first element of lets initializer list must be an atom");
+    }
+    auto atom = std::get<parser::Atom>(init_list[0].value).value;
+
+    if (!std::holds_alternative<parser::Symbol>(atom)) {
+      throw std::runtime_error(
+          "first element of lets initializer list must be a symbol");
+    }
+
+    auto sym = std::get<parser::Symbol>(atom);
+    auto value_sexp = init_list[1];
+
+    Env new_env(env);
+    new_env.add(sym.name, eval_ast(value_sexp, env));
+
+    return eval_ast(uargs[1], new_env);
+  }
+
   std::vector<int> args;
   for (auto arg : uargs) {
     args.push_back(eval_ast(arg, env));

@@ -59,3 +59,11 @@ TEST(EvalSuite, GlobalEnvSimple) {
   run("(* z (+ x y))", 21, std::make_pair("x", 119), std::make_pair("y", -112),
       std::make_pair("z", 3));
 }
+
+TEST(EvalSuite, LetSimple) { run("(let (x 119) x)", 119); }
+
+TEST(EvalSuite, LetComplexInit) { run("(let (x (+ 1 (* 2 2))) x)", 5); }
+
+TEST(EvalSuite, LetComplexBody) { run("(let (x 55) (+ 9 (* x 2)))", 119); }
+
+TEST(EvalSuite, LetNested) { run("(let (x 12) (let (y 19) (+ x y)))", 31); }
