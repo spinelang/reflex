@@ -12,11 +12,11 @@
 
 int Eval::eval_ast(const parser::Sexp& s, const Env& env) {
   if (std::holds_alternative<parser::Atom>(s.value)) {
-    auto& atom = std::get<parser::Atom>(s.value);
+    const auto& atom = std::get<parser::Atom>(s.value);
     if (std::holds_alternative<parser::Number>(atom.value)) {
       return std::get<parser::Number>(atom.value).num;
     } else if (std::holds_alternative<parser::Symbol>(atom.value)) {
-      auto v = env.get(std::get<parser::Symbol>(atom.value).name);
+      const auto& v = env.get(std::get<parser::Symbol>(atom.value).name);
       if (v.has_value()) {
         return v.value();
       } else {
@@ -45,10 +45,10 @@ int Eval::eval_list(const parser::List& l, const Env& env) {
     std::terminate();
   }
 
-  auto op =
+  const auto& op =
       std::get<parser::Symbol>(std::get<parser::Atom>(l.list[0].value).value)
           .name;
-  auto uargs = l.list | std::views::drop(1);
+  const auto& uargs = l.list | std::views::drop(1);
 
   if (op == "if") {
     if (uargs.size() != 3) {
@@ -62,7 +62,7 @@ int Eval::eval_list(const parser::List& l, const Env& env) {
   }
 
   if (op == "or") {
-    for (auto& arg : uargs) {
+    for (const auto& arg : uargs) {
       if (eval_ast(arg, env) != 0) {
         return 1;
       }
@@ -71,7 +71,7 @@ int Eval::eval_list(const parser::List& l, const Env& env) {
   }
 
   if (op == "and") {
-    for (auto& arg : uargs) {
+    for (const auto& arg : uargs) {
       if (eval_ast(arg, env) == 0) {
         return 0;
       }
@@ -86,12 +86,12 @@ int Eval::eval_list(const parser::List& l, const Env& env) {
     if (!std::holds_alternative<parser::Atom>(uargs[0].value)) {
       throw std::runtime_error("define accepts symbol as first parameter");
     }
-    auto atom = std::get<parser::Atom>(uargs[0].value);
+    const auto& atom = std::get<parser::Atom>(uargs[0].value);
     if (!std::holds_alternative<parser::Symbol>(atom.value)) {
       throw std::runtime_error("define accepts symbol as first parameter");
     }
-    auto sym = std::get<parser::Symbol>(atom.value);
-    auto res = eval_ast(uargs[1], env);
+    const auto& sym = std::get<parser::Symbol>(atom.value);
+    const auto res = eval_ast(uargs[1], env);
 
     global_env.add(sym.name, res);
 
@@ -105,7 +105,7 @@ int Eval::eval_list(const parser::List& l, const Env& env) {
     if (!std::holds_alternative<parser::List>(uargs[0].value)) {
       throw std::runtime_error("let accepts list as first parameter");
     }
-    auto init_list = std::get<parser::List>(uargs[0].value).list;
+    const auto& init_list = std::get<parser::List>(uargs[0].value).list;
     if (init_list.size() != 2) {
       throw std::runtime_error(
           "identifier list of let must have only two entries");
@@ -114,15 +114,15 @@ int Eval::eval_list(const parser::List& l, const Env& env) {
       throw std::runtime_error(
           "first element of lets initializer list must be an atom");
     }
-    auto atom = std::get<parser::Atom>(init_list[0].value).value;
+    const auto& atom = std::get<parser::Atom>(init_list[0].value).value;
 
     if (!std::holds_alternative<parser::Symbol>(atom)) {
       throw std::runtime_error(
           "first element of lets initializer list must be a symbol");
     }
 
-    auto sym = std::get<parser::Symbol>(atom);
-    auto value_sexp = init_list[1];
+    const auto& sym = std::get<parser::Symbol>(atom);
+    const auto& value_sexp = init_list[1];
 
     Env new_env(env);
     new_env.add(sym.name, eval_ast(value_sexp, env));
@@ -131,14 +131,14 @@ int Eval::eval_list(const parser::List& l, const Env& env) {
   }
 
   if (op == "begin") {
-    for (auto& arg : uargs | std::views::take(uargs.size() - 1)) {
+    for (const auto& arg : uargs | std::views::take(uargs.size() - 1)) {
       eval_ast(arg, env);
     }
     return eval_ast(uargs.back(), env);
   }
 
   std::vector<int> args;
-  for (auto arg : uargs) {
+  for (const auto& arg : uargs) {
     args.push_back(eval_ast(arg, env));
   }
 
@@ -158,7 +158,7 @@ int Eval::eval_list(const parser::List& l, const Env& env) {
 
   if (op == "+") {
     auto sum = 0;
-    for (auto elem : args) {
+    for (const auto& elem : args) {
       sum += elem;
     }
     return sum;
@@ -166,7 +166,7 @@ int Eval::eval_list(const parser::List& l, const Env& env) {
 
   if (op == "*") {
     auto prod = 1;
-    for (auto elem : args) {
+    for (const auto& elem : args) {
       prod *= elem;
     }
     return prod;
