@@ -2,6 +2,7 @@
 
 #include <cctype>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <variant>
 
@@ -42,6 +43,28 @@ std::string_view Lexer::read_sym() {
 
 int Lexer::read_num() {
   auto start = offset_;
+  if (peek() == '\'') {  // a character
+    eat();
+    auto co = eat();
+    if (!co.has_value()) {
+      throw std::runtime_error("empty char literal");
+    }
+    auto c = co.value();
+    if (c != '\\') {
+      eat();  // eat the right '
+      return static_cast<int>(c);
+    } else {
+      eat();
+      switch (eat().value()) {
+      case 'n':
+        return static_cast<int>('\n');
+      case 't':
+        return static_cast<int>('\t');
+      default:
+        throw std::runtime_error("unknown escape sequence");
+      }
+    }
+  }
   if (peek() == '-') eat();
   while (peek().has_value() && std::isdigit(peek().value())) {
     eat();
@@ -69,7 +92,7 @@ Token Lexer::scan_token() {
     return Token(TokenType::RParen, std::monostate{});
   }
 
-  if (std::isdigit(c) || c == '-') {
+  if (std::isdigit(c) || c == '-' || c == '\'') {
     auto num = read_num();
     return Token(TokenType::Number, num);
   } else {
