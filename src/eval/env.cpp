@@ -1,8 +1,9 @@
 #include "src/eval/env.hpp"
+
 #include <optional>
 #include <string>
 
-std::optional<int> Env::get(const std::string &name) const {
+std::optional<int> Env::get(const std::string& name) const {
   if (entries_.contains(name)) {
     return entries_.at(name);
   } else {
@@ -14,4 +15,4 @@ std::optional<int> Env::get(const std::string &name) const {
   }
 }
 
-void Env::add(const std::string &name, int value) { entries_[name] = value; }
+void Env::add(const std::string& name, int value) { entries_[name] = value; }

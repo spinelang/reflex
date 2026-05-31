@@ -1,14 +1,16 @@
 #include "src/parser/parser.hpp"
-#include "src/lexer/lexer.hpp"
-#include "src/lexer/token.hpp"
-#include "src/parser/ast.hpp"
+
 #include <exception>
 #include <iostream>
 #include <sstream>
 
+#include "src/lexer/lexer.hpp"
+#include "src/lexer/token.hpp"
+#include "src/parser/ast.hpp"
+
 namespace parser {
 
-Parser::Parser(lexer::Lexer &&lexer)
+Parser::Parser(lexer::Lexer&& lexer)
     : lexer_(lexer), cur_(lexer_.scan_token()) {}
 void Parser::advance() { cur_ = lexer_.scan_token(); }
 
@@ -16,7 +18,6 @@ void Parser::eat(lexer::TokenType expected_type) {
   if (cur_.type == expected_type) {
     advance();
   } else {
-
     std::ostringstream oss;
     oss << "unexpected token ";
     oss << cur_.type;
@@ -62,4 +63,4 @@ List Parser::parse_list() {
 
 Sexp Parser::parse() { return parse_sexp(); }
 
-} // namespace parser
+}  // namespace parser

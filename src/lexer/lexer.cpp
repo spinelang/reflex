@@ -1,9 +1,11 @@
 #include "src/lexer/lexer.hpp"
-#include "src/lexer/token.hpp"
+
 #include <cctype>
 #include <optional>
 #include <string>
 #include <variant>
+
+#include "src/lexer/token.hpp"
 
 namespace lexer {
 
@@ -40,8 +42,7 @@ std::string_view Lexer::read_sym() {
 
 int Lexer::read_num() {
   auto start = offset_;
-  if (peek() == '-')
-    eat();
+  if (peek() == '-') eat();
   while (peek().has_value() && std::isdigit(peek().value())) {
     eat();
   }
@@ -77,4 +78,4 @@ Token Lexer::scan_token() {
   }
 }
 
-} // namespace lexer
+}  // namespace lexer

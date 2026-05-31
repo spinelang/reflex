@@ -18,7 +18,7 @@ struct Symbol {
 
   Symbol(std::string name) : name(name) {}
 
-  friend std::ostream &operator<<(std::ostream &os, const Symbol &s);
+  friend std::ostream& operator<<(std::ostream& os, const Symbol& s);
 };
 
 struct Number {
@@ -26,7 +26,7 @@ struct Number {
 
   Number(int n) : num(n) {}
 
-  friend std::ostream &operator<<(std::ostream &os, const Number &n);
+  friend std::ostream& operator<<(std::ostream& os, const Number& n);
 };
 
 struct List {
@@ -34,7 +34,7 @@ struct List {
 
   List(std::vector<Sexp> l);
 
-  friend std::ostream &operator<<(std::ostream &os, const List &l);
+  friend std::ostream& operator<<(std::ostream& os, const List& l);
 };
 
 struct Atom {
@@ -43,7 +43,7 @@ struct Atom {
   Atom(int n) : value(n) {}
   Atom(std::string s) : value(s) {}
 
-  friend std::ostream &operator<<(std::ostream &os, const Atom &a);
+  friend std::ostream& operator<<(std::ostream& os, const Atom& a);
 };
 
 struct Sexp {
@@ -52,8 +52,8 @@ struct Sexp {
   Sexp(Atom a) : value(a) {}
   Sexp(List l) : value(l) {}
 
-  friend std::ostream &operator<<(std::ostream &os, const Sexp &s);
+  friend std::ostream& operator<<(std::ostream& os, const Sexp& s);
 };
 
-void dump_ast(const Sexp &ast, int level = 0);
-} // namespace parser
+void dump_ast(const Sexp& ast, int level = 0);
+}  // namespace parser

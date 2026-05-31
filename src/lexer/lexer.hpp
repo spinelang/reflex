@@ -1,9 +1,10 @@
 #pragma once
 
-#include "src/lexer/token.hpp"
 #include <cctype>
 #include <optional>
 #include <string_view>
+
+#include "src/lexer/token.hpp"
 
 namespace lexer {
 
@@ -18,10 +19,10 @@ class Lexer {
   std::string_view read_sym();
   int read_num();
 
-public:
+ public:
   Lexer(std::string_view src) : source_(src), offset_(0) {}
 
   Token scan_token();
 };
 
-} // namespace lexer
+}  // namespace lexer

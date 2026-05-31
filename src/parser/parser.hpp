@@ -21,8 +21,8 @@ class Parser {
   Symbol parse_symbol();
   Number parse_number();
 
-public:
-  Parser(lexer::Lexer &&lexer);
+ public:
+  Parser(lexer::Lexer&& lexer);
   Sexp parse();
 };
-} // namespace parser
+}  // namespace parser

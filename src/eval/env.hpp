@@ -10,9 +10,9 @@ class Env {
   std::unordered_map<std::string, int> entries_;
   std::shared_ptr<Env> parent_;
 
-public:
+ public:
   Env(std::shared_ptr<Env> parent = 0) : parent_(parent) {};
 
-  std::optional<int> get(const std::string &name) const;
-  void add(const std::string &name, int value);
+  std::optional<int> get(const std::string& name) const;
+  void add(const std::string& name, int value);
 };

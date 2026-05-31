@@ -2,7 +2,7 @@
 
 namespace lexer {
 
-std::ostream &operator<<(std::ostream &os, const Token &t) {
+std::ostream& operator<<(std::ostream& os, const Token& t) {
   switch (t.type) {
   case TokenType::LParen:
     os << "LP";
@@ -24,7 +24,7 @@ std::ostream &operator<<(std::ostream &os, const Token &t) {
   return os;
 }
 
-std::ostream &operator<<(std::ostream &os, const TokenType t) {
+std::ostream& operator<<(std::ostream& os, const TokenType t) {
   switch (t) {
   case TokenType::LParen:
     os << "left parenthesis";
@@ -48,4 +48,4 @@ std::ostream &operator<<(std::ostream &os, const TokenType t) {
 
 bool Token::is_eof() const { return type == TokenType::Eof; }
 
-} // namespace lexer
+}  // namespace lexer

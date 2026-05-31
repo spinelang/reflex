@@ -1,6 +1,5 @@
 #include "src/eval/eval.hpp"
-#include "src/eval/env.hpp"
-#include "src/parser/ast.hpp"
+
 #include <exception>
 #include <iostream>
 #include <ranges>
@@ -8,9 +7,12 @@
 #include <variant>
 #include <vector>
 
-int Eval::eval_ast(const parser::Sexp &s, const Env &env) {
+#include "src/eval/env.hpp"
+#include "src/parser/ast.hpp"
+
+int Eval::eval_ast(const parser::Sexp& s, const Env& env) {
   if (std::holds_alternative<parser::Atom>(s.value)) {
-    auto &atom = std::get<parser::Atom>(s.value);
+    auto& atom = std::get<parser::Atom>(s.value);
     if (std::holds_alternative<parser::Number>(atom.value)) {
       return std::get<parser::Number>(atom.value).num;
     } else if (std::holds_alternative<parser::Symbol>(atom.value)) {
@@ -23,7 +25,7 @@ int Eval::eval_ast(const parser::Sexp &s, const Env &env) {
     }
   }
 
-  const auto &list = std::get<parser::List>(s.value).list;
+  const auto& list = std::get<parser::List>(s.value).list;
   if (list.empty()) {
     throw std::runtime_error("empty lists are not yet supported");
   }
@@ -31,7 +33,7 @@ int Eval::eval_ast(const parser::Sexp &s, const Env &env) {
   return eval_list(std::get<parser::List>(s.value), env);
 }
 
-int Eval::eval_list(const parser::List &l, const Env &env) {
+int Eval::eval_list(const parser::List& l, const Env& env) {
   if (l.list.empty()) {
     throw std::runtime_error("empty lists not supported");
   }
@@ -60,7 +62,7 @@ int Eval::eval_list(const parser::List &l, const Env &env) {
   }
 
   if (op == "or") {
-    for (auto &arg : uargs) {
+    for (auto& arg : uargs) {
       if (eval_ast(arg, env) != 0) {
         return 1;
       }
@@ -69,7 +71,7 @@ int Eval::eval_list(const parser::List &l, const Env &env) {
   }
 
   if (op == "and") {
-    for (auto &arg : uargs) {
+    for (auto& arg : uargs) {
       if (eval_ast(arg, env) == 0) {
         return 0;
       }
@@ -140,6 +142,6 @@ int Eval::eval() {
   return eval_ast(ast_, global_env);
 }
 
-void Eval::add_global(const std::string &name, int value) {
+void Eval::add_global(const std::string& name, int value) {
   global_env.add(name, value);
 }

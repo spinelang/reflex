@@ -1,12 +1,13 @@
+#include <iostream>
+#include <string>
+
 #include "src/eval/eval.hpp"
 #include "src/lexer/lexer.hpp"
 #include "src/lexer/token.hpp"
 #include "src/parser/ast.hpp"
 #include "src/parser/parser.hpp"
-#include <iostream>
-#include <string>
 
-void run(const std::string &program) {
+void run(const std::string& program) {
   lexer::Lexer prelex(program);
 
   std::cout << "program:\n" << program << "\n";
