@@ -5,19 +5,23 @@
 #include <memory>
 #include <ranges>
 #include <stdexcept>
-#include <variant>
 #include <vector>
 
 #include "src/eval/env.hpp"
 #include "src/parser/ast.hpp"
 
 int Eval::eval_ast(const parser::Sexp& s, const std::shared_ptr<Env>& env) {
-  if (std::holds_alternative<parser::Atom>(s.value)) {
-    const auto& atom = std::get<parser::Atom>(s.value);
-    if (std::holds_alternative<parser::Number>(atom.value)) {
-      return std::get<parser::Number>(atom.value).num;
-    } else if (std::holds_alternative<parser::Symbol>(atom.value)) {
-      const auto& v = env->get(std::get<parser::Symbol>(atom.value).name);
+  const auto* atom = s.as_atom();
+
+  if (atom != nullptr) {
+    const auto* num = atom->as_num();
+    if (num != nullptr) {
+      return num->num;
+    }
+
+    const auto* sym = atom->as_sym();
+    if (sym != nullptr) {
+      const auto& v = env->get(sym->name);
       if (v.has_value()) {
         return v.value();
       } else {
@@ -26,25 +30,23 @@ int Eval::eval_ast(const parser::Sexp& s, const std::shared_ptr<Env>& env) {
     }
   }
 
-  const auto& list = std::get<parser::List>(s.value).list;
-  if (list.empty()) {
+  const auto list = s.as_list();
+  if (list->list.empty()) {
     throw std::runtime_error("empty lists are not yet supported");
   }
 
-  return eval_list(std::get<parser::List>(s.value), env);
+  return eval_list(*list, env);
 }
 
 int Eval::eval_list(const parser::List& l, std::shared_ptr<Env> env) {
-  if (!std::holds_alternative<parser::Atom>(l.list[0].value) ||
-      !std::holds_alternative<parser::Symbol>(
-          std::get<parser::Atom>(l.list[0].value).value)) {
-    std::cout << "first entry of a list must be a symbol" << std::endl;
-    std::terminate();
+  const auto* pop =
+      l.list[0].as_atom() ? l.list[0].as_atom()->as_sym() : nullptr;
+  if (!pop) {
+    // TODO subject to change with the addition of lambdas
+    throw std::runtime_error("first entry of a list must be a symbol");
   }
 
-  const auto& op =
-      std::get<parser::Symbol>(std::get<parser::Atom>(l.list[0].value).value)
-          .name;
+  const auto& op = pop->name;
   const auto& uargs = l.list | std::views::drop(1);
 
   if (op == "if") {
@@ -80,17 +82,16 @@ int Eval::eval_list(const parser::List& l, std::shared_ptr<Env> env) {
     if (uargs.size() != 2) {
       throw std::runtime_error("define accepts only two arguments");
     }
-    if (!std::holds_alternative<parser::Atom>(uargs[0].value)) {
+
+    const auto& sym =
+        uargs[0].as_atom() ? uargs[0].as_atom()->as_sym() : nullptr;
+    if (!sym) {
       throw std::runtime_error("define accepts symbol as first parameter");
     }
-    const auto& atom = std::get<parser::Atom>(uargs[0].value);
-    if (!std::holds_alternative<parser::Symbol>(atom.value)) {
-      throw std::runtime_error("define accepts symbol as first parameter");
-    }
-    const auto& sym = std::get<parser::Symbol>(atom.value);
+
     const auto res = eval_ast(uargs[1], env);
 
-    global_env->add(sym.name, res);
+    global_env->add(sym->name, res);
 
     return res;
   }
@@ -99,30 +100,28 @@ int Eval::eval_list(const parser::List& l, std::shared_ptr<Env> env) {
     if (uargs.size() != 2) {
       throw std::runtime_error("let accepts only two arguments");
     }
-    if (!std::holds_alternative<parser::List>(uargs[0].value)) {
+
+    const auto* pinit_list = uargs[0].as_list();
+    if (!pinit_list) {
       throw std::runtime_error("let accepts list as first parameter");
     }
-    const auto& init_list = std::get<parser::List>(uargs[0].value).list;
+
+    const auto& init_list = pinit_list->list;
     if (init_list.size() != 2) {
       throw std::runtime_error(
           "identifier list of let must have only two entries");
     }
-    if (!std::holds_alternative<parser::Atom>(init_list[0].value)) {
-      throw std::runtime_error(
-          "first element of lets initializer list must be an atom");
-    }
-    const auto& atom = std::get<parser::Atom>(init_list[0].value).value;
-
-    if (!std::holds_alternative<parser::Symbol>(atom)) {
+    const auto& sym =
+        init_list[0].as_atom() ? init_list[0].as_atom()->as_sym() : nullptr;
+    if (!sym) {
       throw std::runtime_error(
           "first element of lets initializer list must be a symbol");
     }
 
-    const auto& sym = std::get<parser::Symbol>(atom);
     const auto& value_sexp = init_list[1];
 
     auto new_env = std::make_shared<Env>(env);
-    new_env->add(sym.name, eval_ast(value_sexp, env));
+    new_env->add(sym->name, eval_ast(value_sexp, env));
 
     return eval_ast(uargs[1], new_env);
   }

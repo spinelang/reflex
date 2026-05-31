@@ -43,6 +43,9 @@ struct Atom {
   Atom(int n) : value(n) {}
   Atom(std::string s) : value(s) {}
 
+  const Number* as_num() const { return std::get_if<Number>(&value); };
+  const Symbol* as_sym() const { return std::get_if<Symbol>(&value); };
+
   friend std::ostream& operator<<(std::ostream& os, const Atom& a);
 };
 
@@ -51,6 +54,9 @@ struct Sexp {
 
   Sexp(Atom a) : value(a) {}
   Sexp(List l) : value(l) {}
+
+  const Atom* as_atom() const { return std::get_if<Atom>(&value); };
+  const List* as_list() const { return std::get_if<List>(&value); };
 
   friend std::ostream& operator<<(std::ostream& os, const Sexp& s);
 };
