@@ -18,6 +18,7 @@ class Lexer {
   void skip_whitespace();
   std::string_view read_sym();
   int read_num();
+  int read_char();
 
  public:
   Lexer(std::string_view src) : source_(src), offset_(0) {}

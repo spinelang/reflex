@@ -43,34 +43,41 @@ std::string_view Lexer::read_sym() {
 
 int Lexer::read_num() {
   auto start = offset_;
-  if (peek() == '\'') {  // a character
-    eat();
-    auto co = eat();
-    if (!co.has_value()) {
-      throw std::runtime_error("empty char literal");
-    }
-    auto c = co.value();
-    if (c != '\\') {
-      eat();  // eat the right '
-      return static_cast<int>(c);
-    } else {
-      eat();
-      switch (eat().value()) {
-      case 'n':
-        return static_cast<int>('\n');
-      case 't':
-        return static_cast<int>('\t');
-      default:
-        throw std::runtime_error("unknown escape sequence");
-      }
-    }
-  }
   if (peek() == '-') eat();
   while (peek().has_value() && std::isdigit(peek().value())) {
     eat();
   }
 
   return std::stoi(std::string(source_.substr(start, offset_ - start)));
+}
+
+int Lexer::read_char() {
+  eat();
+  auto co = eat();
+  if (!co.has_value()) {
+    throw std::runtime_error("empty char literal");
+  }
+  auto c = co.value();
+  char res;
+
+  if (c != '\\') {
+    res = c;
+  } else {
+    eat();
+    switch (eat().value()) {
+    case 'n':
+      res = '\n';
+      break;
+    case 't':
+      res = '\t';
+      break;
+    default:
+      throw std::runtime_error("unknown escape sequence");
+    }
+  }
+
+  eat();
+  return static_cast<int>(res);
 }
 
 Token Lexer::scan_token() {
@@ -92,9 +99,11 @@ Token Lexer::scan_token() {
     return Token(TokenType::RParen, std::monostate{});
   }
 
-  if (std::isdigit(c) || c == '-' || c == '\'') {
+  if (std::isdigit(c) || c == '-') {
     auto num = read_num();
     return Token(TokenType::Number, num);
+  } else if (c == '\'') {
+    return Token(TokenType::Number, read_char());
   } else {
     auto s = read_sym();
     return Token(TokenType::Symbol, std::string(s));
