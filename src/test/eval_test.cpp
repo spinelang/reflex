@@ -59,3 +59,16 @@ TEST(EvalSuite, LetSimple) { run("(let (x 119) x)", 119); }
 TEST(EvalSuite, LetComplexInit) { run("(let (x (+ 1 (* 2 2))) x)", 5); }
 TEST(EvalSuite, LetComplexBody) { run("(let (x 55) (+ 9 (* x 2)))", 119); }
 TEST(EvalSuite, LetNested) { run("(let (x 12) (let (y 19) (+ x y)))", 31); }
+
+TEST(EvalSuite, BeginNoSideEffects) { run("(begin 1 2 3 4)", 4); }
+TEST(EvalSuite, BeginOneDefine) { run("(begin (define x 21) x)", 21); }
+TEST(EvalSuite, BeginDefineVars) {
+  run(
+      R"(
+      (begin
+          (define x 10)
+          (define y 100)
+          (+ x y))
+      )",
+      110);
+}

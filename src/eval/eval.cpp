@@ -130,6 +130,13 @@ int Eval::eval_list(const parser::List& l, const Env& env) {
     return eval_ast(uargs[1], new_env);
   }
 
+  if (op == "begin") {
+    for (auto& arg : uargs | std::views::take(uargs.size() - 1)) {
+      eval_ast(arg, env);
+    }
+    return eval_ast(uargs.back(), env);
+  }
+
   std::vector<int> args;
   for (auto arg : uargs) {
     args.push_back(eval_ast(arg, env));
