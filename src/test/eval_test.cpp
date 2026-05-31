@@ -38,6 +38,7 @@ TEST(EvalSuite, SimpleArithmetics) { run("(+ 1 2)", 3); }
 TEST(EvalSuite, LongArithmetics) {
   run("(* -1 (+ 12 (* 1 2) (+ 7 (* 12 11))))", -153);
 }
+
 TEST(EvalSuite, SimpleIfNotLeq) {
   run("(if (not (<= 1 (* 2 12))) (+ 0 0 0 1) (* 1 1 2))", 2);
 }
@@ -45,12 +46,15 @@ TEST(EvalSuite, SimpleAndOrA) {
   run("(and (or (and 1 0 1) (and  1 1)) 1)", 1);
 }
 TEST(EvalSuite, SimpleAndOrB) { run("(or (and (or 0 0 0) 0) 0)", 0); }
+
 TEST(EvalSuite, DefineSingle) { run("(define x 12)", 12); }
+
 TEST(EvalSuite, GlobalEnvSingle) { run("x", 119, std::make_pair("x", 119)); }
 TEST(EvalSuite, GlobalEnvSimple) {
   run("(* z (+ x y))", 21, std::make_pair("x", 119), std::make_pair("y", -112),
       std::make_pair("z", 3));
 }
+
 TEST(EvalSuite, LetSimple) { run("(let (x 119) x)", 119); }
 TEST(EvalSuite, LetComplexInit) { run("(let (x (+ 1 (* 2 2))) x)", 5); }
 TEST(EvalSuite, LetComplexBody) { run("(let (x 55) (+ 9 (* x 2)))", 119); }
