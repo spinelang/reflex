@@ -7,10 +7,10 @@
 
 class Eval {
   parser::Sexp ast_;
-  Env global_env;
+  std::shared_ptr<Env> global_env;
 
-  int eval_list(const parser::List& l, const Env& env);
-  int eval_ast(const parser::Sexp& s, const Env& env);
+  int eval_list(const parser::List& l, std::shared_ptr<Env> env);
+  int eval_ast(const parser::Sexp& s, std::shared_ptr<Env> env);
 
  public:
   Eval(parser::Sexp ast) : ast_(ast), global_env(std::make_shared<Env>()) {}

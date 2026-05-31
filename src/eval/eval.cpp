@@ -2,6 +2,7 @@
 
 #include <exception>
 #include <iostream>
+#include <memory>
 #include <ranges>
 #include <stdexcept>
 #include <variant>
@@ -10,13 +11,13 @@
 #include "src/eval/env.hpp"
 #include "src/parser/ast.hpp"
 
-int Eval::eval_ast(const parser::Sexp& s, const Env& env) {
+int Eval::eval_ast(const parser::Sexp& s, std::shared_ptr<Env> env) {
   if (std::holds_alternative<parser::Atom>(s.value)) {
     const auto& atom = std::get<parser::Atom>(s.value);
     if (std::holds_alternative<parser::Number>(atom.value)) {
       return std::get<parser::Number>(atom.value).num;
     } else if (std::holds_alternative<parser::Symbol>(atom.value)) {
-      const auto& v = env.get(std::get<parser::Symbol>(atom.value).name);
+      const auto& v = env->get(std::get<parser::Symbol>(atom.value).name);
       if (v.has_value()) {
         return v.value();
       } else {
@@ -33,7 +34,7 @@ int Eval::eval_ast(const parser::Sexp& s, const Env& env) {
   return eval_list(std::get<parser::List>(s.value), env);
 }
 
-int Eval::eval_list(const parser::List& l, const Env& env) {
+int Eval::eval_list(const parser::List& l, std::shared_ptr<Env> env) {
   if (l.list.empty()) {
     throw std::runtime_error("empty lists not supported");
   }
@@ -93,7 +94,7 @@ int Eval::eval_list(const parser::List& l, const Env& env) {
     const auto& sym = std::get<parser::Symbol>(atom.value);
     const auto res = eval_ast(uargs[1], env);
 
-    global_env.add(sym.name, res);
+    global_env->add(sym.name, res);
 
     return res;
   }
@@ -124,8 +125,8 @@ int Eval::eval_list(const parser::List& l, const Env& env) {
     const auto& sym = std::get<parser::Symbol>(atom);
     const auto& value_sexp = init_list[1];
 
-    Env new_env(env);
-    new_env.add(sym.name, eval_ast(value_sexp, env));
+    auto new_env = std::make_shared<Env>(env);
+    new_env->add(sym.name, eval_ast(value_sexp, env));
 
     return eval_ast(uargs[1], new_env);
   }
@@ -177,10 +178,10 @@ int Eval::eval_list(const parser::List& l, const Env& env) {
 }
 
 int Eval::eval() {
-  global_env.add("pi", 3);
+  global_env->add("pi", 3);
   return eval_ast(ast_, global_env);
 }
 
 void Eval::add_global(const std::string& name, int value) {
-  global_env.add(name, value);
+  global_env->add(name, value);
 }

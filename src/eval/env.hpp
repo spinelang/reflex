@@ -12,6 +12,8 @@ class Env {
 
  public:
   Env(std::shared_ptr<Env> parent = nullptr) : parent_(parent) {};
+  Env(const Env&) = delete;
+  Env& operator=(const Env&) = delete;
 
   std::optional<int> get(const std::string& name) const;
   void add(const std::string& name, int value);
