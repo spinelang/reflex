@@ -11,7 +11,7 @@
 #include "src/eval/env.hpp"
 #include "src/parser/ast.hpp"
 
-int Eval::eval_ast(const parser::Sexp& s, std::shared_ptr<Env> env) {
+int Eval::eval_ast(const parser::Sexp& s, const std::shared_ptr<Env>& env) {
   if (std::holds_alternative<parser::Atom>(s.value)) {
     const auto& atom = std::get<parser::Atom>(s.value);
     if (std::holds_alternative<parser::Number>(atom.value)) {
