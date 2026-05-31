@@ -35,10 +35,6 @@ int Eval::eval_ast(const parser::Sexp& s, const std::shared_ptr<Env>& env) {
 }
 
 int Eval::eval_list(const parser::List& l, std::shared_ptr<Env> env) {
-  if (l.list.empty()) {
-    throw std::runtime_error("empty lists not supported");
-  }
-
   if (!std::holds_alternative<parser::Atom>(l.list[0].value) ||
       !std::holds_alternative<parser::Symbol>(
           std::get<parser::Atom>(l.list[0].value).value)) {
@@ -138,8 +134,14 @@ int Eval::eval_list(const parser::List& l, std::shared_ptr<Env> env) {
     return eval_ast(uargs.back(), env);
   }
 
+  return apply_operator(op, l.list, env);
+}
+
+int Eval::apply_operator(const std::string& op,
+                         const std::vector<parser::Sexp> l,
+                         const std::shared_ptr<Env>& env) {
   std::vector<int> args;
-  for (const auto& arg : uargs) {
+  for (const auto& arg : l | std::views::drop(1)) {
     args.push_back(eval_ast(arg, env));
   }
 
