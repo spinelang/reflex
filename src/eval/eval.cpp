@@ -150,7 +150,7 @@ int Eval::eval_list(const parser::List& l, std::shared_ptr<Env> env) {
 }
 
 int Eval::apply_operator(const std::string& op,
-                         const std::vector<parser::Sexp> l,
+                         const std::vector<parser::Sexp>& l,
                          const std::shared_ptr<Env>& env) {
   std::vector<int> args;
   for (const auto& arg : l | std::views::drop(1)) {

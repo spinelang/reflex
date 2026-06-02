@@ -25,7 +25,7 @@ class Eval {
 
   int eval_list(const parser::List& l, std::shared_ptr<Env> env);
   int eval_ast(const parser::Sexp& s, const std::shared_ptr<Env>& env);
-  int apply_operator(const std::string& op, const std::vector<parser::Sexp> l,
+  int apply_operator(const std::string& op, const std::vector<parser::Sexp>& l,
                      const std::shared_ptr<Env>& env);
 
  public:
