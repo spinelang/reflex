@@ -63,7 +63,6 @@ int Lexer::read_char() {
   if (c != '\\') {
     res = c;
   } else {
-    eat();
     switch (eat().value()) {
     case 'n':
       res = '\n';
