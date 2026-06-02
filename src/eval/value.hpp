@@ -30,6 +30,7 @@ struct Value {
   static Value make_cons(ConsCell* c) {
     return {ValueType::ConsPtr, {.cons = c}};
   }
+  static Value make_nil() { return {ValueType::Nil, {.cons = nullptr}}; }
 
   bool operator==(int n) const {
     return type == ValueType::Number && as.num == n;

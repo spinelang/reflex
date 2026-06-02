@@ -97,3 +97,34 @@ TEST(EvalSuite, Fibo10) {
       )",
       55);
 }
+
+TEST(EvalSuite, SimpleConsCarCdr) {
+  run(R"(
+        (begin
+          (define con (cons 100 19))
+          (+ (car con) (cdr con)))
+      )",
+      119);
+}
+TEST(EvalSuite, TwoConsNodes) {
+  run(R"(
+        (begin
+          (define list (cons 1 (cons 2 () )))
+          (+ (car list) (car (cdr list))))
+      )",
+      3);
+}
+TEST(EvalSuite, ListSum) {
+  run(R"(
+        (begin
+          (define testlist (cons 1 (cons 2 (cons 3 (cons 4 (cons 5 () ))))))
+          (define sum_list
+            (lambda (l)
+              (if (null? l)
+                0
+                (+ (car l) (sum_list (cdr l))))
+          (+ (car l) (car (cdr l)))))
+          (sum_list testlist))
+      )",
+      15);
+}

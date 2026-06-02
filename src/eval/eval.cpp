@@ -29,14 +29,14 @@ Value Eval::eval_ast(const parser::Sexp& s, Env* env) {
       if (v.has_value()) {
         return v.value();
       } else {
-        throw std::runtime_error("unresolved symbol");
+        throw std::runtime_error("unresolved symbol: " + sym->name);
       }
     }
   }
 
   const auto list = s.as_list();
   if (list->list.empty()) {
-    throw std::runtime_error("empty lists are not yet supported");
+    return Value::make_nil();
   }
 
   return eval_list(*list, env);
@@ -152,7 +152,8 @@ Value Eval::eval_list(const parser::List& l, Env* env) {
     if (op == "begin") return eval_begin(args, env);
     if (op == "lambda") return eval_lambda(args, env);
 
-    if (op == "+" || op == "*" || op == "<=" || op == "not") {
+    if (op == "+" || op == "*" || op == "<=" || op == "not" || op == "cons" ||
+        op == "car" || op == "cdr" || op == "null?") {
       return apply_operator(op, l.list, env);
     }
   }
@@ -244,6 +245,46 @@ Value Eval::apply_operator(const std::string& op,
       prod *= elem.as.num;
     }
     return Value::make_int(prod);
+  }
+
+  if (op == "cons") {
+    if (args.size() != 2) {
+      throw std::runtime_error("cons takes exactly two arguments");
+    }
+    auto* con = alloc.alloc<ConsCell>();
+    con->car = args[0];
+    con->cdr = args[1];
+
+    return Value::make_cons(con);
+  }
+
+  if (op == "car") {
+    if (args.size() != 1) {
+      throw std::runtime_error("car takes exactly one argument");
+    }
+    if (args[0].type != ValueType::ConsPtr) {
+      throw std::runtime_error("car's argument must be a cons cell");
+    }
+
+    return args[0].as.cons->car;
+  }
+
+  if (op == "cdr") {
+    if (args.size() != 1) {
+      throw std::runtime_error("cdr takes exactly one argument");
+    }
+    if (args[0].type != ValueType::ConsPtr) {
+      throw std::runtime_error("cdr's argument must be a cons cell");
+    }
+
+    return args[0].as.cons->cdr;
+  }
+
+  if (op == "null?") {
+    if (args.size() != 1) {
+      throw std::runtime_error("null? takes exactly one argument");
+    }
+    return Value::make_int(args[0].type == ValueType::Nil);
   }
 
   std::cout << "unsupported operator " << op << std::endl;
