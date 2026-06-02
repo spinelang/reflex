@@ -5,17 +5,17 @@
 TEST(LexerSuite, ReadChars) {
   auto s = "'a' 'b' 'c' '\n'";
   lexer::Lexer lex(s);
-  ASSERT_EQ(lex.scan_token(), 'a');
-  ASSERT_EQ(lex.scan_token(), 'b');
-  ASSERT_EQ(lex.scan_token(), 'c');
-  ASSERT_EQ(lex.scan_token(), '\n');
+  ASSERT_EQ(std::get<int>(lex.scan_token().value), 'a');
+  ASSERT_EQ(std::get<int>(lex.scan_token().value), 'b');
+  ASSERT_EQ(std::get<int>(lex.scan_token().value), 'c');
+  ASSERT_EQ(std::get<int>(lex.scan_token().value), '\n');
 }
 
 TEST(LexerSuite, CharsClosed) {
   auto s = "'\n' '\n' 'a' '\n'";
   lexer::Lexer lex(s);
-  ASSERT_EQ(lex.scan_token(), '\n');
-  ASSERT_EQ(lex.scan_token(), '\n');
-  ASSERT_EQ(lex.scan_token(), 'a');
-  ASSERT_EQ(lex.scan_token(), '\n');
+  ASSERT_EQ(std::get<int>(lex.scan_token().value), '\n');
+  ASSERT_EQ(std::get<int>(lex.scan_token().value), '\n');
+  ASSERT_EQ(std::get<int>(lex.scan_token().value), 'a');
+  ASSERT_EQ(std::get<int>(lex.scan_token().value), '\n');
 }
