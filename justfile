@@ -10,5 +10,5 @@ build:
 test: build
     meson test -C build
 
-run: build
-    ./build/reader
+run *target: build
+    ./build/reader {{ target }}
