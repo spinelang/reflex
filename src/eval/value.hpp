@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include "src/parser/ast.hpp"
@@ -10,7 +9,7 @@ class Env;
 struct Closure {
   std::vector<std::string> params;
   parser::Sexp body;
-  std::shared_ptr<Env> env;
+  Env* env;
 };
 
 struct ConsCell;
@@ -28,8 +27,8 @@ struct Value {
   static Value make_closure(Closure* c) {
     return {ValueType::ClosurePtr, {.closure = c}};
   }
-  static Value make_cons(Closure* c) {
-    return {ValueType::ClosurePtr, {.closure = c}};
+  static Value make_cons(ConsCell* c) {
+    return {ValueType::ConsPtr, {.cons = c}};
   }
 
   bool operator==(int n) const {

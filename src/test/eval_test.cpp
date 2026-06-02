@@ -75,3 +75,25 @@ TEST(EvalSuite, BeginDefineVars) {
       )",
       110);
 }
+
+TEST(EvalSuite, LambdaIdentity) { run("((lambda (x) x) 12)", 12); }
+TEST(EvalSuite, LambdaSum) { run("((lambda (x y) (+ x y)) 100 19)", 119); }
+TEST(EvalSuite, LambdaNested) {
+  run("((lambda (x y) (+ ((lambda (x) (* x 2)) x) y)) 50 19)", 119);
+}
+
+TEST(EvalSuite, Fibo10) {
+  run(
+      R"(
+      (begin
+          (define fib (lambda (n)
+            (if (<= n 2)
+              1
+              (+
+                (fib (+ n -1))
+                (fib (+ n -2))))))
+  
+          (fib 10))
+      )",
+      55);
+}

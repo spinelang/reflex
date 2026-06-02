@@ -9,7 +9,7 @@ std::optional<Value> Env::get(const std::string& name) const {
     if (cur->entries_.contains(name)) {
       return cur->entries_.at(name);
     }
-    cur = cur->parent_.get();
+    cur = cur->parent_;
   }
 
   return std::nullopt;

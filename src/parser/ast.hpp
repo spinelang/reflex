@@ -54,6 +54,7 @@ struct Sexp {
 
   Sexp(Atom a) : value(a) {}
   Sexp(List l) : value(l) {}
+  Sexp() : value(0) {}
 
   const Atom* as_atom() const { return std::get_if<Atom>(&value); };
   const List* as_list() const { return std::get_if<List>(&value); };
