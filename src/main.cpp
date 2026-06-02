@@ -1,4 +1,6 @@
+#include <fstream>
 #include <iostream>
+#include <iterator>
 #include <string>
 
 #include "src/eval/eval.hpp"
@@ -32,7 +34,13 @@ void run(const std::string& program) {
   std::cout << eval.eval() << std::endl;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+  if (argc > 1) {
+    std::ifstream input(argv[1]);
+    run(std::string((std::istreambuf_iterator<char>(input)),
+                    std::istreambuf_iterator<char>()));
+    return 0;
+  }
   std::string input;
   std::cout << "print q to quit" << std::endl;
   while (1) {
