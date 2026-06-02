@@ -49,10 +49,13 @@ TEST(EvalSuite, SimpleAndOrB) { run("(or (and (or 0 0 0) 0) 0)", 0); }
 
 TEST(EvalSuite, DefineSingle) { run("(define x 12)", 12); }
 
-TEST(EvalSuite, GlobalEnvSingle) { run("x", 119, std::make_pair("x", 119)); }
+TEST(EvalSuite, GlobalEnvSingle) {
+  run("x", 119, std::make_pair("x", Value::make_int(119)));
+}
 TEST(EvalSuite, GlobalEnvSimple) {
-  run("(* z (+ x y))", 21, std::make_pair("x", 119), std::make_pair("y", -112),
-      std::make_pair("z", 3));
+  run("(* z (+ x y))", 21, std::make_pair("x", Value::make_int(119)),
+      std::make_pair("y", Value::make_int(-112)),
+      std::make_pair("z", Value::make_int(3)));
 }
 
 TEST(EvalSuite, LetSimple) { run("(let (x 119) x)", 119); }

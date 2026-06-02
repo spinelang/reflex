@@ -3,7 +3,7 @@
 #include <optional>
 #include <string>
 
-std::optional<int> Env::get(const std::string& name) const {
+std::optional<Value> Env::get(const std::string& name) const {
   const auto* cur = this;
   while (cur != nullptr) {
     if (cur->entries_.contains(name)) {
@@ -15,4 +15,4 @@ std::optional<int> Env::get(const std::string& name) const {
   return std::nullopt;
 }
 
-void Env::add(const std::string& name, int value) { entries_[name] = value; }
+void Env::add(const std::string& name, Value value) { entries_[name] = value; }

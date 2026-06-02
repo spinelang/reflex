@@ -9,15 +9,16 @@
 #include <vector>
 
 #include "src/eval/env.hpp"
+#include "src/eval/value.hpp"
 #include "src/parser/ast.hpp"
 
-int Eval::eval_ast(const parser::Sexp& s, const std::shared_ptr<Env>& env) {
+Value Eval::eval_ast(const parser::Sexp& s, const std::shared_ptr<Env>& env) {
   const auto* atom = s.as_atom();
 
   if (atom != nullptr) {
     const auto* num = atom->as_num();
     if (num != nullptr) {
-      return num->num;
+      return Value::make_int(num->num);
     }
 
     const auto* sym = atom->as_sym();
@@ -39,40 +40,52 @@ int Eval::eval_ast(const parser::Sexp& s, const std::shared_ptr<Env>& env) {
   return eval_list(*list, env);
 }
 
-int Eval::eval_if(std::span<const parser::Sexp> args,
-                  const std::shared_ptr<Env>& env) {
+Value Eval::eval_if(std::span<const parser::Sexp> args,
+                    const std::shared_ptr<Env>& env) {
   if (args.size() != 3) {
     throw std::runtime_error("not accepts only a single argument");
   }
-  if (eval_ast(args[0], env)) {
+  auto cond = eval_ast(args[0], env);
+  if (cond.type != ValueType::Number) {
+    throw std::runtime_error("if's condition must be a numerical");
+  }
+  if (cond.as.num) {
     return eval_ast(args[1], env);
   } else {
     return eval_ast(args[2], env);
   }
 }
 
-int Eval::eval_or(std::span<const parser::Sexp> args,
-                  const std::shared_ptr<Env>& env) {
+Value Eval::eval_or(std::span<const parser::Sexp> args,
+                    const std::shared_ptr<Env>& env) {
   for (const auto& arg : args) {
-    if (eval_ast(arg, env) != 0) {
-      return 1;
+    auto cond = eval_ast(arg, env);
+    if (cond.type != ValueType::Number) {
+      throw std::runtime_error("or's condition must be a numerical");
+    }
+    if (cond.as.num) {
+      return Value::make_int(1);
     }
   }
-  return 0;
+  return Value::make_int(0);
 }
 
-int Eval::eval_and(std::span<const parser::Sexp> args,
-                   const std::shared_ptr<Env>& env) {
+Value Eval::eval_and(std::span<const parser::Sexp> args,
+                     const std::shared_ptr<Env>& env) {
   for (const auto& arg : args) {
-    if (eval_ast(arg, env) == 0) {
-      return 0;
+    auto cond = eval_ast(arg, env);
+    if (cond.type != ValueType::Number) {
+      throw std::runtime_error("or's condition must be a numerical");
+    }
+    if (!cond.as.num) {
+      return Value::make_int(0);
     }
   }
-  return 1;
+  return Value::make_int(1);
 }
 
-int Eval::eval_define(std::span<const parser::Sexp> args,
-                      const std::shared_ptr<Env>& env) {
+Value Eval::eval_define(std::span<const parser::Sexp> args,
+                        const std::shared_ptr<Env>& env) {
   if (args.size() != 2) {
     throw std::runtime_error("define accepts only two arguments");
   }
@@ -89,8 +102,8 @@ int Eval::eval_define(std::span<const parser::Sexp> args,
   return res;
 }
 
-int Eval::eval_let(std::span<const parser::Sexp> args,
-                   const std::shared_ptr<Env>& env) {
+Value Eval::eval_let(std::span<const parser::Sexp> args,
+                     const std::shared_ptr<Env>& env) {
   if (args.size() != 2) {
     throw std::runtime_error("let accepts only two arguments");
   }
@@ -120,15 +133,15 @@ int Eval::eval_let(std::span<const parser::Sexp> args,
   return eval_ast(args[1], new_env);
 }
 
-int Eval::eval_begin(std::span<const parser::Sexp> args,
-                     const std::shared_ptr<Env>& env) {
+Value Eval::eval_begin(std::span<const parser::Sexp> args,
+                       const std::shared_ptr<Env>& env) {
   for (const auto& arg : args | std::views::take(args.size() - 1)) {
     eval_ast(arg, env);
   }
   return eval_ast(args.back(), env);
 }
 
-int Eval::eval_list(const parser::List& l, const std::shared_ptr<Env>& env) {
+Value Eval::eval_list(const parser::List& l, const std::shared_ptr<Env>& env) {
   const auto* pop =
       l.list[0].as_atom() ? l.list[0].as_atom()->as_sym() : nullptr;
   if (!pop) {
@@ -149,10 +162,10 @@ int Eval::eval_list(const parser::List& l, const std::shared_ptr<Env>& env) {
   return apply_operator(op, l.list, env);
 }
 
-int Eval::apply_operator(const std::string& op,
-                         const std::vector<parser::Sexp>& l,
-                         const std::shared_ptr<Env>& env) {
-  std::vector<int> args;
+Value Eval::apply_operator(const std::string& op,
+                           const std::vector<parser::Sexp>& l,
+                           const std::shared_ptr<Env>& env) {
+  std::vector<Value> args;
   for (const auto& arg : l | std::views::drop(1)) {
     args.push_back(eval_ast(arg, env));
   }
@@ -161,41 +174,54 @@ int Eval::apply_operator(const std::string& op,
     if (args.size() != 1) {
       throw std::runtime_error("not accepts only a single argument");
     }
-    return !args[0];
+    if (args[0].type != ValueType::Number) {
+      throw std::runtime_error("not accepts only integers");
+    }
+    return Value::make_int(!args[0].as.num);
   }
 
   if (op == "<=") {
     if (args.size() != 2) {
       throw std::runtime_error("<= accepts only two arguments");
     }
-    return args[0] <= args[1];
+    if (args[0].type != ValueType::Number ||
+        args[0].type != ValueType::Number) {
+      throw std::runtime_error("<= accepts only integers");
+    }
+    return Value::make_int(args[0].as.num <= args[1].as.num);
   }
 
   if (op == "+") {
     auto sum = 0;
     for (const auto& elem : args) {
-      sum += elem;
+      if (elem.type != ValueType::Number) {
+        throw std::runtime_error("+ accepts only numbers");
+      }
+      sum += elem.as.num;
     }
-    return sum;
+    return Value::make_int(sum);
   }
 
   if (op == "*") {
     auto prod = 1;
     for (const auto& elem : args) {
-      prod *= elem;
+      if (elem.type != ValueType::Number) {
+        throw std::runtime_error("* accepts only numbers");
+      }
+      prod *= elem.as.num;
     }
-    return prod;
+    return Value::make_int(prod);
   }
 
   std::cout << "unsupported operator " << op << std::endl;
   std::terminate();
 }
 
-int Eval::eval() {
-  global_env->add("pi", 3);
+Value Eval::eval() {
+  global_env->add("pi", Value::make_int(3));
   return eval_ast(ast_, global_env);
 }
 
-void Eval::add_global(const std::string& name, int value) {
+void Eval::add_global(const std::string& name, Value value) {
   global_env->add(name, value);
 }
