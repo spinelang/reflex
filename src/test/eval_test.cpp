@@ -122,8 +122,7 @@ TEST(EvalSuite, ListSum) {
             (lambda (l)
               (if (null? l)
                 0
-                (+ (car l) (sum_list (cdr l))))
-          (+ (car l) (car (cdr l)))))
+                (+ (car l) (sum_list (cdr l))))))
           (sum_list testlist))
       )",
       15);
