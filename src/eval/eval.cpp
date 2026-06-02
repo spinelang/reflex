@@ -128,7 +128,7 @@ int Eval::eval_begin(std::span<const parser::Sexp> args,
   return eval_ast(args.back(), env);
 }
 
-int Eval::eval_list(const parser::List& l, std::shared_ptr<Env> env) {
+int Eval::eval_list(const parser::List& l, const std::shared_ptr<Env>& env) {
   const auto* pop =
       l.list[0].as_atom() ? l.list[0].as_atom()->as_sym() : nullptr;
   if (!pop) {

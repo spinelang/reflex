@@ -4,15 +4,15 @@
 #include <string>
 
 std::optional<int> Env::get(const std::string& name) const {
-  if (entries_.contains(name)) {
-    return entries_.at(name);
-  } else {
-    if (parent_ != nullptr) {
-      return parent_->get(name);
-    } else {
-      return std::nullopt;
+  const auto* cur = this;
+  while (cur != nullptr) {
+    if (cur->entries_.contains(name)) {
+      return cur->entries_.at(name);
     }
+    cur = cur->parent_.get();
   }
+
+  return std::nullopt;
 }
 
 void Env::add(const std::string& name, int value) { entries_[name] = value; }
