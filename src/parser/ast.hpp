@@ -33,6 +33,7 @@ struct List {
   std::vector<Sexp> list;
 
   List(std::vector<Sexp> l);
+  List() = default;
 
   friend std::ostream& operator<<(std::ostream& os, const List& l);
 };

@@ -42,6 +42,10 @@ Sexp Parser::parse_sexp() {
     eat(lexer::TokenType::Symbol);
     return Sexp(Atom(val));
   }
+  if (cur_.type == lexer::TokenType::Nil) {
+    eat(lexer::TokenType::Nil);
+    return Sexp(List());
+  }
 
   return Sexp(parse_list());
 }
