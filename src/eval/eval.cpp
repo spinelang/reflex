@@ -152,8 +152,9 @@ Value Eval::eval_list(const parser::List& l, Env* env) {
     if (op == "begin") return eval_begin(args, env);
     if (op == "lambda") return eval_lambda(args, env);
 
-    if (op == "+" || op == "*" || op == "<=" || op == "not" || op == "cons" ||
-        op == "car" || op == "cdr" || op == "null?") {
+    if (op == "+" || op == "*" || op == "/" || op == "-" || op == "<=" ||
+        op == "not" || op == "cons" || op == "car" || op == "cdr" ||
+        op == "null?") {
       return apply_operator(op, l.list, env);
     }
   }
@@ -245,6 +246,36 @@ Value Eval::apply_operator(const std::string& op,
       prod *= elem.as.num;
     }
     return Value::make_int(prod);
+  }
+
+  if (op == "-") {
+    if (args[0].type != ValueType::Number) {
+      throw std::runtime_error("- accepts only numbers");
+    }
+    auto res = args[0].as.num;
+    for (const auto& elem : args | std::views::drop(1)) {
+      if (elem.type != ValueType::Number) {
+        throw std::runtime_error("- accepts only numbers");
+      }
+      res -= elem.as.num;
+    }
+    return Value::make_int(res);
+  }
+
+  if (op == "/") {
+    if (args.size() != 2) {
+      throw std::runtime_error("/ accepts only two arguments");
+    }
+    if (args[0].type != ValueType::Number) {
+      throw std::runtime_error("/ accepts only numbers");
+    }
+    if (args[1].type != ValueType::Number) {
+      throw std::runtime_error("/ accepts only numbers");
+    }
+    if (args[1].as.num == 0) {
+      throw std::runtime_error("division by zero!");
+    }
+    return Value::make_int(args[0].as.num / args[1].as.num);
   }
 
   if (op == "cons") {
