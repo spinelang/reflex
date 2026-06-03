@@ -97,7 +97,8 @@ Token Lexer::scan_token() {
     return Token(TokenType::RParen, std::monostate{});
   }
 
-  if (std::isdigit(c) || c == '-') {
+  if (std::isdigit(c) ||
+      (c == '-' && peek().has_value() && std::isdigit(peek().value()))) {
     auto num = read_num();
     return Token(TokenType::Number, num);
   } else if (c == '\'') {
