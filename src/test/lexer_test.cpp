@@ -29,3 +29,13 @@ TEST(LexerSuite, Nil) {
   ASSERT_EQ(lex.scan_token().type, lexer::TokenType::Nil);
   ASSERT_EQ(lex.scan_token().type, lexer::TokenType::Nil);
 }
+
+TEST(LexerSuite, Tick) {
+  auto s = "'('a' a)";
+  lexer::Lexer lex(s);
+  ASSERT_EQ(lex.scan_token().type, lexer::TokenType::Tick);
+  ASSERT_EQ(lex.scan_token().type, lexer::TokenType::LParen);
+  ASSERT_EQ(lex.scan_token().type, lexer::TokenType::Number);
+  ASSERT_EQ(lex.scan_token().type, lexer::TokenType::Symbol);
+  ASSERT_EQ(lex.scan_token().type, lexer::TokenType::RParen);
+}

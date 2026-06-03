@@ -52,7 +52,6 @@ int Lexer::read_num() {
 }
 
 int Lexer::read_char() {
-  eat();
   auto co = eat();
   if (!co.has_value()) {
     throw std::runtime_error("empty char literal");
@@ -102,6 +101,15 @@ Token Lexer::scan_token() {
     auto num = read_num();
     return Token(TokenType::Number, num);
   } else if (c == '\'') {
+    eat();
+    auto c = peek();
+    if (c.has_value()) {
+      if (c == '(') return Token(TokenType::Tick, std::monostate());
+      return Token(TokenType::Number, read_char());
+    } else {
+      throw std::runtime_error("unexpected eof parsing a tick");
+    }
+
     return Token(TokenType::Number, read_char());
   } else {
     auto s = read_sym();
