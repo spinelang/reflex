@@ -24,7 +24,7 @@ driver_src = [
     'src/main.cpp'
 ]
 
-test_src = ['src/test/eval_test.cpp']
+test_src = ['src/test/eval_test.cpp', 'src/test/lexer_test.cpp', 'src/test/parser_test.cpp']
 
 interp_lib = static_library('interp lib', interpreter_src)
 test('tests', executable('testss', test_src, dependencies: gtest_dep, link_with: interp_lib))
