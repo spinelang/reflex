@@ -3,6 +3,7 @@
 #include <exception>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 
 #include "src/lexer/lexer.hpp"
 #include "src/lexer/token.hpp"
@@ -45,6 +46,27 @@ Sexp Parser::parse_sexp() {
   if (cur_.type == lexer::TokenType::Nil) {
     eat(lexer::TokenType::Nil);
     return Sexp(List());
+  }
+  if (cur_.type == lexer::TokenType::Tick) {
+    eat(lexer::TokenType::Tick);
+    auto plist = parse_sexp();
+    if (plist.as_list() == nullptr) {
+      throw std::runtime_error("a list must follow a tick");
+    }
+
+    auto list = std::get<List>(plist.value);
+
+    auto chain = Sexp(List());
+    for (auto it = list.list.rbegin(); it != list.list.rend(); ++it) {
+      List call;
+      call.list.push_back(Sexp(Atom("cons")));
+      call.list.push_back(*it);
+      call.list.push_back(chain);
+
+      chain = Sexp(call);
+    }
+
+    return chain;
   }
 
   return Sexp(parse_list());
