@@ -5,7 +5,7 @@
 
 namespace lexer {
 
-enum class TokenType { LParen, RParen, Number, Symbol, Eof };
+enum class TokenType { LParen, RParen, Number, Symbol, Nil, Eof };
 
 class Token {
   using value_type = std::variant<int,            // Number

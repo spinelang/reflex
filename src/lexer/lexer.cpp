@@ -105,6 +105,7 @@ Token Lexer::scan_token() {
     return Token(TokenType::Number, read_char());
   } else {
     auto s = read_sym();
+    if (s == "nil") return Token(TokenType::Nil, std::monostate());
     return Token(TokenType::Symbol, std::string(s));
   }
 }
