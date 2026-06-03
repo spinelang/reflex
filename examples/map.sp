@@ -6,10 +6,10 @@
       (cons
         (f (car l))
         (map f (cdr l))))))
-  (define sum_list
+  (define sum
     (lambda (l)
       (if (null? l)
         0
-        (+ (car l) (sum_list (cdr l))))))
+        (+ (car l) (sum (cdr l))))))
   (define testlist (map (lambda (x) (* x 2)) '(1 2 3 4 5)))
-  (sum_list testlist))
+  (sum testlist))
