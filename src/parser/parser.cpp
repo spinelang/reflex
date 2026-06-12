@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <variant>
 
 #include "src/lexer/lexer.hpp"
 #include "src/lexer/token.hpp"
@@ -66,6 +67,20 @@ Sexp Parser::parse_sexp() {
       chain = Sexp(call);
     }
 
+    return chain;
+  }
+  if (cur_.type == lexer::TokenType::String) {
+    auto s = std::get<std::string>(cur_.value);
+    eat(lexer::TokenType::String);
+    auto chain = Sexp(List());
+    for (auto it = s.rbegin(); it != s.rend(); ++it) {
+      List call;
+      call.list.push_back(Sexp(Atom("cons")));
+      call.list.push_back(Sexp(Atom(static_cast<int>(*it))));
+      call.list.push_back(chain);
+
+      chain = Sexp(call);
+    }
     return chain;
   }
 
