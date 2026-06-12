@@ -98,10 +98,17 @@ Token Lexer::scan_token() {
     return Token(TokenType::RParen, std::monostate{});
   }
 
-  if (std::isdigit(c) ||
-      (c == '-' && peek().has_value() && std::isdigit(peek().value()))) {
-    auto num = read_num();
-    return Token(TokenType::Number, num);
+  if (std::isdigit(c) || (c == '-')) {
+    if (c == '-') {
+      eat();
+      if (peek().has_value() && std::isdigit(peek().value())) {
+        return Token(TokenType::Number, -read_num());
+      } else {
+        return Token(TokenType::Symbol, "-");
+      }
+    }
+
+    return Token(TokenType::Number, read_num());
   } else if (c == '\'') {
     eat();
     auto c = peek();
