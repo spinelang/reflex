@@ -32,13 +32,14 @@ void Lexer::skip_whitespace() {
   }
 }
 
-std::string_view Lexer::read_sym() {
+std::string Lexer::read_sym() {
   auto start = offset_;
   while (peek().has_value() && !is_delimeter(peek().value())) {
     eat();
   }
 
-  return source_.substr(start, offset_ - start);
+  return std::string(source_.substr(start, offset_ - start));
+}
 }
 
 int Lexer::read_num() {

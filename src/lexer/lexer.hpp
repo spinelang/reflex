@@ -16,7 +16,7 @@ class Lexer {
   std::optional<char> eat();
 
   void skip_whitespace();
-  std::string_view read_sym();
+  std::string read_sym();
   int read_num();
   int read_char();
 
