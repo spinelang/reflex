@@ -40,6 +40,44 @@ std::string Lexer::read_sym() {
 
   return std::string(source_.substr(start, offset_ - start));
 }
+
+std::string Lexer::read_string() {
+  std::string res;
+  eat();  // eat the opening "
+
+  while (peek().has_value() && peek().value() != '\"') {
+    auto c = eat().value();
+    if (c == '\\') {
+      auto esc = eat();
+      if (!esc.has_value()) {
+        throw std::runtime_error("unexpected eof in escape sequence");
+      }
+
+      switch (esc.value()) {
+      case 'n':
+        res += '\n';
+        break;
+      case 't':
+        res += '\t';
+        break;
+      case '"':
+        res += '"';
+        break;
+      case '\\':
+        res += '\\';
+        break;
+      }
+    } else {
+      res += c;
+    }
+  }
+
+  if (!peek().has_value()) {
+    throw std::runtime_error("unterminated string literal");
+  }
+
+  eat();  // eat the closing "
+  return res;
 }
 
 int Lexer::read_num() {
@@ -118,8 +156,9 @@ Token Lexer::scan_token() {
     } else {
       throw std::runtime_error("unexpected eof parsing a tick");
     }
-
     return Token(TokenType::Number, read_char());
+  } else if (c == '\"') {
+    return Token(TokenType::String, read_string());
   } else {
     auto s = read_sym();
     if (s == "nil") return Token(TokenType::Nil, std::monostate());

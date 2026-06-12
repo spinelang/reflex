@@ -39,3 +39,10 @@ TEST(LexerSuite, Tick) {
   ASSERT_EQ(lex.scan_token().type, lexer::TokenType::Symbol);
   ASSERT_EQ(lex.scan_token().type, lexer::TokenType::RParen);
 }
+
+TEST(LexerSuite, Strings) {
+  auto s = "\"helo\" \"halo\"";
+  lexer::Lexer lex(s);
+  ASSERT_EQ(lex.scan_token().type, lexer::TokenType::String);
+  ASSERT_EQ(lex.scan_token().type, lexer::TokenType::String);
+}

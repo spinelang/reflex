@@ -16,6 +16,9 @@ std::ostream& operator<<(std::ostream& os, const Token& t) {
   case TokenType::Symbol:
     os << "SYM(" << std::get<std::string>(t.value) << ")";
     break;
+  case TokenType::String:
+    os << "STR(" << std::get<std::string>(t.value) << ")";
+    break;
   case TokenType::Tick:
     os << "Tick";
     break;
@@ -43,6 +46,9 @@ std::ostream& operator<<(std::ostream& os, const TokenType t) {
     break;
   case TokenType::Symbol:
     os << "symbol";
+    break;
+  case TokenType::String:
+    os << "string";
     break;
   case TokenType::Tick:
     os << "tick";
