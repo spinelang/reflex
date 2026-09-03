@@ -11,4 +11,4 @@ test: build
     meson test -C build
 
 run *target: build
-    ./build/reader {{ target }}
+    ./build/reflex {{ target }}

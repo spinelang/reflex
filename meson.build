@@ -32,4 +32,4 @@ test(
     ),
 )
 
-executable('reader', interpreter_src + driver_src)
+executable('reflex', interpreter_src + driver_src)
