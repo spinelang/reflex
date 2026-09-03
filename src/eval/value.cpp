@@ -13,6 +13,9 @@ std::ostream& operator<<(std::ostream& os, const Value v) {
   case ValueType::ConsPtr:
     os << "Cons<" << v.as.cons->car << ", " << v.as.cons->cdr << ">";
     break;
+  case ValueType::NativePtr:
+    os << "NativeFunc<" << v.as.native_func << ">";
+    break;
   case ValueType::Nil:
     os << "Nil";
     break;

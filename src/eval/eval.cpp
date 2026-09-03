@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "src/eval/builtins.hpp"
 #include "src/eval/env.hpp"
 #include "src/eval/value.hpp"
 #include "src/parser/ast.hpp"
@@ -159,13 +160,14 @@ Value Eval::eval_list(const parser::List& l, Env* env) {
     }
   }
 
+  std::vector<Value> args;
+  for (const auto& arg : l.list | std::views::drop(1)) {
+    args.push_back(eval_ast(arg, env));
+  }
+
   auto oc = eval_ast(l.list[0], env);
   if (oc.type == ValueType::ClosurePtr) {
     auto closure = oc.as.closure;
-    std::vector<Value> args;
-    for (const auto& arg : l.list | std::views::drop(1)) {
-      args.push_back(eval_ast(arg, env));
-    }
     Env* call_env = alloc.alloc<Env>(closure->env);
 
     for (size_t i = 0; i < closure->params.size(); ++i) {
@@ -173,6 +175,8 @@ Value Eval::eval_list(const parser::List& l, Env* env) {
     }
 
     return eval_ast(closure->body, call_env);
+  } else if (oc.type == ValueType::NativePtr) {
+    return oc.as.native_func(args);
   } else {
     throw std::runtime_error("not a form");
   }
@@ -324,6 +328,8 @@ Value Eval::apply_operator(const std::string& op,
 
 Value Eval::eval() {
   global_env.add("pi", Value::make_int(3));
+  global_env.add("clear", Value::make_native(native_clear));
+  global_env.add("putchar", Value::make_native(native_putchar));
   return eval_ast(ast_, &global_env);
 }
 

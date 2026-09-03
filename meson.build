@@ -11,6 +11,7 @@ interpreter_src = [
     'src/eval/eval.cpp',
     'src/eval/env.cpp',
     'src/eval/value.cpp',
+    'src/eval/builtins.cpp'
 ]
 
 driver_src = ['src/main.cpp']
